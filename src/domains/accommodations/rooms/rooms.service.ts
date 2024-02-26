@@ -59,19 +59,6 @@ export class RoomsService {
     return canceledReservation;
   }
 
-  async cancelReservationByUser(
-    reservedById: Reservation['reservedById'],
-    roomId: Reservation['roomId'],
-    date: Reservation['date'],
-  ) {
-    const canceledReservation = await this.prismaService.reservation.update({
-      where: { roomId_date: { roomId, date }, reservedById },
-      data: { reservedAt: null, reservedById: null },
-    });
-
-    return canceledReservation;
-  }
-
   async checkedInRoom(
     roomId: Reservation['roomId'],
     date: Reservation['date'],
@@ -103,5 +90,17 @@ export class RoomsService {
     const review = await this.reviewsService.createReview(roomId, userId, data);
 
     return review;
+  }
+
+  async canceledByUser(
+    roomId: Room['id'],
+    userId: User['id'],
+    date: Reservation['date'],
+  ) {
+    const canceledReservation = await this.prismaService.reservation.update({
+      where: { roomId_date: { roomId, date }, reservedById: userId },
+      data: { reservedAt: null, reservedById: null },
+    });
+    return canceledReservation;
   }
 }

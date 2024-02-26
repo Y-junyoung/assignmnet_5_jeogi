@@ -28,6 +28,7 @@ export class AuthGuard implements CanActivate {
     if (!accountTypeInDecorator) {
       return true;
     }
+    console.log('accountTypeInDecorator: ', accountTypeInDecorator);
 
     const request = context.switchToHttp().getRequest<Request>();
     const accessToken = this.extractTokenFromHeader(request);
@@ -39,6 +40,7 @@ export class AuthGuard implements CanActivate {
         accessToken,
         secret,
       ) as JwtPayload & { accountType: AccountType };
+      console.log('accountTypeInToken: ', accountTypeInToken);
 
       if (accountTypeInDecorator !== accountTypeInToken) throw new Error();
 

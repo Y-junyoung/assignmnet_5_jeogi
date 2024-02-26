@@ -3,6 +3,7 @@ import {
   Controller,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
@@ -33,6 +34,21 @@ export class RoomsController {
     return reservation;
   }
 
+  @Patch(':roomId/reservations/:reservationId')
+  @Private('user')
+  canceledReservation(
+    @Param('roomId', ParseIntPipe) roomId: number,
+    @Param('userId') userId: string,
+    @Body('date') date: string,
+  ) {
+    const canceledReservation = this.roomsService.canceledByUser(
+      roomId,
+      userId,
+      day(date).startOf('day').toDate(),
+    );
+    return canceledReservation;
+  }
+
   @Put(':roomId/reservations/:reservationId')
   @Private('partner')
   cancelReservationByPartner(
@@ -44,22 +60,6 @@ export class RoomsController {
       accommodationId,
       roomId,
       reservationId,
-    );
-
-    return canceledReservation;
-  }
-
-  @Put(':roomId/reservations/:reservationId')
-  @Private('user')
-  cancelReservationByUser(
-    @DUser() user: User,
-    @Param('roomId', ParseIntPipe) roomId: number,
-    @Body('date') date: string,
-  ) {
-    const canceledReservation = this.roomsService.cancelReservationByUser(
-      user.id,
-      roomId,
-      day(date).startOf('day').toDate(),
     );
 
     return canceledReservation;
